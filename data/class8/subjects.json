@@ -1,0 +1,7 @@
+[
+  { "key": "science", "name": "Science" },
+  { "key": "history", "name": "History" },
+  { "key": "geography", "name": "Geography" },
+  { "key": "math", "name": "Math" },
+  { "key": "english", "name": "English" }
+]

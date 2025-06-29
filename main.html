@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>KnowledgeEngine – Main</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --accent: #F87060;
+      --accent-hover: #d85e50;
+      --bg: #1E1E1E;
+      --text: #FAFAFA;
+      --card: #2A2D34;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Nunito', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      background-color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      color: var(--card)
+    }
+
+    select {
+      background-color: var(--card);
+      color: var(--text);
+      border: 1px solid var(--accent);
+      padding: 0.5rem;
+      border-radius: 5px;
+      font-family: inherit;
+    }
+
+    .search-bar {
+      padding: 1rem 2rem;
+      background: var(--bg);
+    }
+
+    .search-bar input {
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: 8px;
+      border: none;
+      font-size: 1rem;
+      background: var(--card);
+      color: var(--text);
+    }
+
+    .subject-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1.5rem;
+      padding: 2rem;
+    }
+
+    .subject-box {
+      background: var(--card);
+      padding: 1.5rem;
+      border-radius: 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      border: 2px solid transparent;
+    }
+
+    .subject-box:hover {
+      background: var(--accent);
+      color: var(--bg);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📕 KnowledgeEngine</h1>
+    <select id="classSelect">
+      <option disabled selected>Select Class</option>
+      <option value="class6">Class 6</option>
+      <option value="class7">Class 7</option>
+      <option value="class8">Class 8</option>
+      <option value="class9">Class 9</option>
+      <option value="class10">Class 10</option>
+    </select>
+  </header>
+
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Search across your syllabus...">
+  </div>
+
+  <div class="subject-grid" id="subjectGrid">
+    <!-- Subject boxes will appear here -->
+  </div>
+
+  <script>
+    const classSelect = document.getElementById('classSelect');
+    const subjectGrid = document.getElementById('subjectGrid');
+
+    const loadSubjects = async (classKey) => {
+      subjectGrid.innerHTML = '';
+      try {
+        const res = await fetch(`data/${classKey}/subjects.json`);
+        const subjects = await res.json();
+        subjects.forEach(subj => {
+          const box = document.createElement('div');
+          box.className = 'subject-box';
+          box.textContent = subj.name;
+          box.style.color = 'var(--accent)';
+          box.onclick = () => alert('Clicked: ' + subj.key); // placeholder
+          subjectGrid.appendChild(box);
+        });
+      } catch (e) {
+        subjectGrid.innerHTML = '<p style="padding:1rem;">No subjects found for this class.</p>';
+      }
+    };
+
+    classSelect.addEventListener('change', (e) => {
+      const selected = e.target.value;
+      localStorage.setItem('userClass', selected);
+      loadSubjects(selected);
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedClass = localStorage.getItem('userClass');
+      if (savedClass) {
+        classSelect.value = savedClass;
+        loadSubjects(savedClass);
+      }
+    });
+  </script>
+</body>
+</html>
