@@ -134,7 +134,9 @@
           box.className = 'subject-box';
           box.textContent = subj.name;
           box.style.color = 'var(--accent)';
-          box.onclick = () => alert('Clicked: ' + subj.key); // placeholder
+          box.onclick = () => {
+            window.location.href = `topic.html?subject=${subj.key}`;
+          };
           subjectGrid.appendChild(box);
         });
       } catch (e) {

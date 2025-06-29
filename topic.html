@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>KnowledgeEngine – Topics</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --accent: #F87060;
+      --accent-hover: #d85e50;
+      --bg: #1E1E1E;
+      --text: #FAFAFA;
+      --card: #2A2D34;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Nunito', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      background-color: var(--card);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      color: var(--accent);
+    }
+
+    .topic-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, max-content));
+      gap: 1.5rem;
+      padding: 2rem;
+      justify-content: center;
+    }
+
+    .topic-card {
+      background-color: var(--card);
+      padding: 1.5rem;
+      border-radius: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      text-align: center;
+    }
+
+    .topic-card:hover {
+      background-color: var(--accent);
+      color: var(--bg);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📚 Topics</h1>
+    <span id="headerMeta">Loading...</span>
+  </header>
+
+  <div class="topic-grid" id="topicGrid">
+    <!-- Topic cards go here -->
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const subject = params.get('subject');
+    const userClass = localStorage.getItem('userClass');
+    const topicGrid = document.getElementById('topicGrid');
+    const headerMeta = document.getElementById('headerMeta');
+
+    if (!subject || !userClass) {
+      headerMeta.textContent = 'Missing class or subject info.';
+    } else {
+      headerMeta.textContent = `${userClass.toUpperCase()} > ${subject.toUpperCase()}`;
+      loadTopics(userClass, subject);
+    }
+
+    async function loadTopics(cls, subject) {
+      try {
+        const res = await fetch(`data/${cls}/${subject}/index.json`);
+        const topics = await res.json();
+
+        topics.forEach(topic => {
+          const card = document.createElement('div');
+          card.className = 'topic-card';
+          card.textContent = topic.title;
+          card.onclick = () => {
+            window.location.href = `chapter.html?class=${cls}&subject=${subject}&topic=${topic.key}`;
+          };
+          topicGrid.appendChild(card);
+        });
+      } catch (err) {
+        topicGrid.innerHTML = `<p style="padding:1rem;">Failed to load topics for ${subject}.</p>`;
+      }
+    }
+  </script>
+</body>
+</html>
