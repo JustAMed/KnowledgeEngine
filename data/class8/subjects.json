@@ -3,5 +3,6 @@
   { "key": "history", "name": "History" },
   { "key": "geography", "name": "Geography" },
   { "key": "math", "name": "Math" },
-  { "key": "english", "name": "English" }
+  { "key": "english", "name": "English" },
+  { "key": "civics", "name": "Civics" }
 ]
