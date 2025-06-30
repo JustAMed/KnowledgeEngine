@@ -148,6 +148,7 @@
       const selected = e.target.value;
       localStorage.setItem('userClass', selected);
       loadSubjects(selected);
+      loadTerms(selected);
     });
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -155,7 +156,64 @@
       if (savedClass) {
         classSelect.value = savedClass;
         loadSubjects(savedClass);
+        loadTerms(savedClass);
       }
+    });
+
+    const searchInput = document.getElementById('searchInput');
+    let searchIndex = [];
+
+    const loadTerms = async (classKey) => {
+      searchIndex = [];
+      try {
+        const subjRes = await fetch(`data/${classKey}/subjects.json`);
+        const subjects = await subjRes.json();
+
+        for (const subject of subjects) {
+          const topicRes = await fetch(`data/${classKey}/${subject.key}/index.json`);
+          const topics = await topicRes.json();
+
+          for (const topic of topics) {
+            const termsPath = `data/${classKey}/${subject.key}/${topic.key}/terms.json`;
+            try {
+              const termsRes = await fetch(termsPath);
+              const terms = await termsRes.json();
+              terms.forEach(term => searchIndex.push({ ...term }));
+            } catch (e) {
+              // skip missing terms.json
+            }
+          }
+        }
+      } catch (e) {
+        console.error("Error loading terms:", e);
+      }
+    };
+
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.trim().toLowerCase();
+      let resultsBox = document.getElementById('searchResults');
+      if (!resultsBox) {
+        resultsBox = document.createElement('div');
+        resultsBox.id = 'searchResults';
+        resultsBox.style.padding = '1rem 2rem';
+        document.body.insertBefore(resultsBox, document.getElementById('subjectGrid'));
+      }
+      resultsBox.innerHTML = '';
+
+      if (query.length < 2) return;
+
+      const matches = searchIndex.filter(entry =>
+        entry.term.toLowerCase().includes(query) ||
+        entry.keywords.some(k => k.toLowerCase().includes(query))
+      );
+
+      matches.forEach(match => {
+        const div = document.createElement('div');
+        div.className = 'subject-box';
+        div.innerHTML = `<strong>${match.term}</strong><br><small>${match.description}</small>`;
+        div.onclick = () => window.location.href = match.link;
+        resultsBox.appendChild(div);
+      });
     });
   </script>
 </body>

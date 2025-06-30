@@ -1,0 +1,14 @@
+[
+  {
+    "term": "Agriculture",
+    "keywords": ["agriculture", "agrinomy", "agri"],
+    "description": "Manures are organic substances used to enrich the soil.",
+    "link": "chapter.html?class=class8&subject=science&topic=crops#manures"
+  },
+  {
+    "term": "fertilizers",
+    "keywords": ["chemicals", "urea", "ammonium nitrate"],
+    "description": "Fertilizers are chemical substances rich in nutrients.",
+    "link": "chapter.html?class=class8&subject=science&topic=crops#fertilizers"
+  }
+]

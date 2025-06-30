@@ -22,7 +22,7 @@
     }
 
     header {
-      background-color: var(--card);
+      background-color: var(--accent);
       padding: 1rem 2rem;
       display: flex;
       justify-content: space-between;
@@ -32,15 +32,16 @@
     header h1 {
       margin: 0;
       font-size: 1.5rem;
-      color: var(--accent);
+      color: var(--card);
     }
 
     .topic-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, max-content));
+      display: flex;
+      flex-direction: column;
       gap: 1.5rem;
       padding: 2rem;
-      justify-content: center;
+      max-width: 700px;
+      margin: auto;
     }
 
     .topic-card {
@@ -55,6 +56,43 @@
     .topic-card:hover {
       background-color: var(--accent);
       color: var(--bg);
+    }
+
+    .card {
+      background: var(--card);
+      color: var(--text);
+      border-radius: 1rem;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .card:hover {
+      background: var(--accent);
+      color: var(--bg);
+      transform: scale(1.02);
+    }
+
+    .card h2 {
+      color: var(--accent);
+      margin-top: 0;
+      font-size: 1.6rem;
+      transition: color 0.2s ease;
+    }
+
+    .card:hover h2 {
+      color: var(--bg);
+    }
+
+    .card p {
+      font-size: 1.05rem;
+      line-height: 1.6;
+    }
+
+    .heck {
+      color: var(--card)
     }
   </style>
 </head>
@@ -77,8 +115,10 @@
 
     if (!subject || !userClass) {
       headerMeta.textContent = 'Missing class or subject info.';
+      headerMeta.className = 'heck';
     } else {
       headerMeta.textContent = `${userClass.toUpperCase()} > ${subject.toUpperCase()}`;
+      headerMeta.className = 'heck'; 
       loadTopics(userClass, subject);
     }
 
@@ -89,15 +129,23 @@
 
         topics.forEach(topic => {
           const card = document.createElement('div');
-          card.className = 'topic-card';
-          card.textContent = topic.title;
+          card.className = 'card';
+          card.innerHTML = `
+            <h2>${topic.title}</h2>
+            <p>${topic.description || ''}</p>
+          `;
           card.onclick = () => {
             window.location.href = `chapter.html?class=${cls}&subject=${subject}&topic=${topic.key}`;
           };
           topicGrid.appendChild(card);
         });
       } catch (err) {
-        topicGrid.innerHTML = `<p style="padding:1rem;">Failed to load topics for ${subject}.</p>`;
+        topicGrid.innerHTML = `
+          <div class="card" style="text-align: center;">
+            <h2>No Topics Found</h2>
+            <p>Looks like there aren't any topics listed for <strong>${subject}</strong> yet.<br/>Please check back later or select a different subject.</p>
+          </div>
+        `;
       }
     }
   </script>
