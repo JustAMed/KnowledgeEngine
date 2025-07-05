@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chapter View – KnowledgeEngine</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --accent: #F87060;
+      --accent-hover: #d85e50;
+      --bg: #1E1E1E;
+      --text: #FAFAFA;
+      --card: #2A2D34;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Nunito', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      background-color: var(--accent);
+      padding: 1rem 2rem;
+      text-align: center;
+      color: var(--bg);
+      font-size: 1.8rem;
+      font-weight: bold;
+    }
+
+    .container {
+      display: flex;
+      height: calc(100vh - 80px);
+    }
+
+    .sidebar {
+      width: 220px;
+      background: var(--card);
+      display: flex;
+      flex-direction: column;
+      padding: 1rem;
+      gap: 1rem;
+    }
+
+    .sidebar button {
+      padding: 1rem;
+      background: var(--accent);
+      color: var(--bg);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.2s ease;
+    }
+
+    .sidebar button:hover {
+      background: var(--accent-hover);
+    }
+
+    .main-content {
+      flex-grow: 1;
+      padding: 2rem;
+      overflow-y: auto;
+    }
+
+    .panel {
+      display: none;
+    }
+
+    .panel.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <header id="topicTitle">Loading topic...</header>
+
+  <div class="container">
+    <div class="sidebar">
+      <button onclick="showPanel('notes')">📄 View Notes</button>
+      <button onclick="showPanel('quiz')">❓ View Questions</button>
+      <button onclick="showPanel('solutions')">✅ View Solutions</button>
+      <button onclick="showPanel('flashcards')">✅ View Flashcards</button>
+    </div>
+
+    <div class="main-content">
+      <div id="notesPanel" class="panel">Loading notes...</div>
+      <div id="quizPanel" class="panel">Loading quiz...</div>
+      <div id="solutionsPanel" class="panel">Loading solutions...</div>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const cls = params.get('class');
+    const subject = params.get('subject');
+    const topic = params.get('topic');
+
+    document.getElementById('topicTitle').textContent = topic?.replace(/-/g, ' ').toUpperCase() || 'Unknown Topic';
+
+    function showPanel(name) {
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      document.getElementById(name + 'Panel').classList.add('active');
+    }
+
+    async function loadPanel(id, file) {
+      try {
+        const res = await fetch(`data/${cls}/${subject}/${topic}/${file}`);
+        const data = await res.json();
+        document.getElementById(id + 'Panel').innerText = data.content || JSON.stringify(data, null, 2);
+      } catch {
+        document.getElementById(id + 'Panel').innerText = 'This section is unavailable.';
+      }
+    }
+
+    // load data
+    if (cls && subject && topic) {
+      loadPanel('notes', 'notes1.json');
+      loadPanel('quiz', 'quiz1.json');
+      loadPanel('solutions', 'solutions.json');
+      showPanel('notes');
+    }
+  </script>
+</body>
+</html>
